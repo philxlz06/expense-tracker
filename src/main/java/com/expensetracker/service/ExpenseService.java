@@ -39,7 +39,7 @@ public class ExpenseService {
                 .map(expense -> {
                     expense.setDescription(updatedExpense.getDescription());
                     expense.setAmount(updatedExpense.getAmount());
-                    expense.setDate(updatedExpense.getDate());
+                    expense.setExpenseDate(updatedExpense.getExpenseDate());
                     return expenseRepository.save(expense);
                 })
                 .orElseGet(() -> {

@@ -2,6 +2,7 @@ package com.expensetracker.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "expenses")
@@ -15,16 +16,33 @@ public class Expense {
 
     private double amount;
 
-    private LocalDate date;
+    private LocalDate expenseDate;
 
-    // Constructors
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
+
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
     public Expense() {
     }
 
-    public Expense(String description, double amount, LocalDate date) {
+    public Expense(String description, double amount, LocalDate expenseDate, User user, Category category) {
         this.description = description;
         this.amount = amount;
-        this.date = date;
+        this.expenseDate = expenseDate;
+        this.user = user;
+        this.category = category;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
     }
 
     // Getters and Setters
@@ -53,11 +71,32 @@ public class Expense {
         this.amount = amount;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public LocalDate getExpenseDate() {
+        return expenseDate;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setExpenseDate(LocalDate expenseDate) {
+        this.expenseDate = expenseDate;
     }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    // No setter for createdAt - set automatically on persist
 }
