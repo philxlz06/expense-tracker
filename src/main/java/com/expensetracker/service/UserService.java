@@ -22,6 +22,12 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    // ✅ This is the method you're using in ExpenseService
+    public User getUserByIdOrThrow(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+    }
+
     public User createUser(User user) {
         return userRepository.save(user);
     }
@@ -31,7 +37,6 @@ public class UserService {
                 .map(user -> {
                     user.setName(updatedUser.getName());
                     user.setEmail(updatedUser.getEmail());
-                    // Add any other fields to update
                     return userRepository.save(user);
                 })
                 .orElseGet(() -> {
