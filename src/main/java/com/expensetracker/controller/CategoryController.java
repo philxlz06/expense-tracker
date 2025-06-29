@@ -2,6 +2,7 @@ package com.expensetracker.controller;
 
 import com.expensetracker.model.Category;
 import com.expensetracker.service.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,12 +27,12 @@ public class CategoryController {
     }
 
     @PostMapping
-    public Category createCategory(@RequestBody Category category) {
+    public Category createCategory(@Valid @RequestBody Category category) {
         return categoryService.createCategory(category);
     }
 
     @PutMapping("/{id}")
-    public Category updateCategory(@PathVariable Long id, @RequestBody Category updatedCategory) {
+    public Category updateCategory(@PathVariable Long id, @Valid @RequestBody Category updatedCategory) {
         return categoryService.updateCategory(id, updatedCategory);
     }
 

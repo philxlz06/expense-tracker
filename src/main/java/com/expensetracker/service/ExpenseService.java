@@ -32,6 +32,9 @@ public class ExpenseService {
     }
 
     public Expense createExpense(Expense expense, Long userId, Long categoryId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("User ID must not be null");
+        }
         if (categoryId == null) {
             throw new IllegalArgumentException("Category ID must not be null");
         }
@@ -46,31 +49,25 @@ public class ExpenseService {
         return expenseRepository.save(expense);
     }
 
-    // Updated updateExpense method - now takes userId and categoryId
     public Expense updateExpense(Long id, Expense updatedExpense, Long userId, Long categoryId) {
-        if (categoryId == null) {
-            throw new IllegalArgumentException("Category ID must not be null");
-        }
-
-        User user = userService.getUserByIdOrThrow(userId);
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid category ID"));
-
         return expenseRepository.findById(id)
                 .map(expense -> {
                     expense.setDescription(updatedExpense.getDescription());
                     expense.setAmount(updatedExpense.getAmount());
                     expense.setExpenseDate(updatedExpense.getExpenseDate());
-                    expense.setCategory(category);
-                    expense.setUser(user);
+
+                    if (userId != null) {
+                        User user = userService.getUserByIdOrThrow(userId);
+                        expense.setUser(user);
+                    }
+                    if (categoryId != null) {
+                        Category category = categoryRepository.findById(categoryId)
+                                .orElseThrow(() -> new IllegalArgumentException("Invalid category ID"));
+                        expense.setCategory(category);
+                    }
                     return expenseRepository.save(expense);
                 })
-                .orElseGet(() -> {
-                    updatedExpense.setId(id);
-                    updatedExpense.setUser(user);
-                    updatedExpense.setCategory(category);
-                    return expenseRepository.save(updatedExpense);
-                });
+                .orElseThrow(() -> new IllegalArgumentException("Expense with id " + id + " not found"));
     }
 
     public void deleteExpense(Long id) {

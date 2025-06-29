@@ -1,6 +1,7 @@
 package com.expensetracker.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -12,25 +13,27 @@ public class Expense {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Size(max = 255, message = "Description can be up to 255 characters")
     private String description;
 
+    @Positive(message = "Amount must be positive")
     private double amount;
 
+    @NotNull(message = "Expense date is required")
     private LocalDate expenseDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    public Expense() {
-    }
+    public Expense() {}
 
     public Expense(String description, double amount, LocalDate expenseDate, User user, Category category) {
         this.description = description;
@@ -98,5 +101,4 @@ public class Expense {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
-    // No setter for createdAt - set automatically on persist
 }

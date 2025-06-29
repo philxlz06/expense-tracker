@@ -2,6 +2,7 @@ package com.expensetracker.controller;
 
 import com.expensetracker.model.User;
 import com.expensetracker.service.UserService;
+import jakarta.validation.Valid; // ✅ Import this
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,12 +27,12 @@ public class UserController {
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user) {
+    public User createUser(@Valid @RequestBody User user) {  // ✅ Added @Valid
         return userService.createUser(user);
     }
 
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
+    public User updateUser(@PathVariable Long id, @Valid @RequestBody User updatedUser) {  // ✅ Added @Valid
         return userService.updateUser(id, updatedUser);
     }
 
