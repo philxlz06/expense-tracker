@@ -5,6 +5,7 @@ import com.expensetracker.dto.AuthResponse;
 import com.expensetracker.model.User;
 import com.expensetracker.repository.UserRepository;
 import com.expensetracker.security.JwtUtil;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,7 +32,7 @@ public class AuthenticationController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestBody AuthRequest request) {
+    public ResponseEntity<String> signup(@Valid @RequestBody AuthRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             return ResponseEntity.badRequest().body("Email already exists");
         }
@@ -46,7 +47,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest request) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -58,5 +59,10 @@ public class AuthenticationController {
         String token = jwtUtil.generateToken(userDetails.getUsername());
 
         return ResponseEntity.ok(new AuthResponse(token));
+    }
+
+    @GetMapping("/hello")
+    public ResponseEntity<String> hello() {
+        return ResponseEntity.ok("Hello world");
     }
 }
