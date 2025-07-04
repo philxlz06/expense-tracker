@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import joblib
 
@@ -10,6 +11,16 @@ class ExpenseData(BaseModel):
 
 
 app = FastAPI()
+
+# Enable CORS
+app.add_middleware(
+    CORSMiddleware,
+    # You can specify origins like ["http://localhost:8000"] for more security
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Load your trained model
 model = joblib.load("expense_classifier.joblib")
@@ -23,6 +34,9 @@ def predict(expense: ExpenseData):
     prediction = model.predict(input_data)
 
     return {"predicted_category": prediction[0]}
+
+# To run this FastAPI app, use the command:
+# uvicorn app:app --reload
 
 
 # To run this FastAPI app, use the command
