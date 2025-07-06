@@ -1,20 +1,20 @@
-# Use official Python image
 FROM python:3.12-slim
 
-# Set working directory in the container
 WORKDIR /app
 
-# Copy the requirements
+# Install system dependencies needed for building wheels
+RUN apt-get update && apt-get install -y gcc && rm -rf /var/lib/apt/lists/*
+
+# Upgrade pip
+RUN python -m pip install --upgrade pip
+
 COPY requirements.txt .
 
-# Install dependencies
+# Install python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy all project files into the container
 COPY . .
 
-# Expose FastAPI default port
 EXPOSE 8000
 
-# Run the FastAPI app
-CMD ["python", "-m", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
