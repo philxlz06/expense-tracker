@@ -34,9 +34,12 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/signup", "/api/auth/login").permitAll()
-                        .anyRequest().authenticated()
-                )
+                        .requestMatchers(
+                                "/api/auth/signup",
+                                "/api/auth/login",
+                                "/api/expenses/predict" // <-- ALLOW public access to this endpoint
+                        ).permitAll()
+                        .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -48,7 +51,7 @@ public class SecurityConfig {
         config.setAllowedOriginPatterns(List.of("*")); // Wildcard origins
         config.setAllowedHeaders(List.of("*"));
         config.setAllowedMethods(List.of("*"));
-        config.setAllowCredentials(true); // If you’re using cookies/token headers
+        config.setAllowCredentials(true); // For cookies or auth headers
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

@@ -41,3 +41,7 @@ function App() {
 }
 
 export default App;
+
+// to run frontend cd frontend 
+// npm install
+// npm start

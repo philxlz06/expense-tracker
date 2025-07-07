@@ -1,6 +1,7 @@
 package com.expensetracker.controller;
 
 import com.expensetracker.model.Expense;
+import com.expensetracker.service.ExpensePredictionService;
 import com.expensetracker.service.ExpenseService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,16 +18,19 @@ import java.util.Optional;
 public class ExpenseController {
 
     private final ExpenseService expenseService;
+    private final ExpensePredictionService predictionService;
 
     @Autowired
-    public ExpenseController(ExpenseService expenseService) {
+    public ExpenseController(ExpenseService expenseService,
+            ExpensePredictionService predictionService) {
         this.expenseService = expenseService;
+        this.predictionService = predictionService;
     }
 
     @PostMapping
     public ResponseEntity<Expense> createExpense(@Valid @RequestBody Expense expense,
-                                                 @RequestParam Long userId,
-                                                 @RequestParam Long categoryId) {
+            @RequestParam Long userId,
+            @RequestParam Long categoryId) {
         Expense createdExpense = expenseService.createExpense(expense, userId, categoryId);
         return ResponseEntity.ok(createdExpense);
     }
@@ -44,11 +48,18 @@ public class ExpenseController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    // 🔥 New ML Prediction Endpoint
+    @GetMapping("/predict")
+    public ResponseEntity<String> predict(@RequestParam String description) {
+        String category = predictionService.getPredictedCategory(description);
+        return ResponseEntity.ok(category);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<Expense> updateExpense(@PathVariable Long id,
-                                                 @Valid @RequestBody Expense updatedExpense,
-                                                 @RequestParam(required = false) Long userId,
-                                                 @RequestParam(required = false) Long categoryId) {
+            @Valid @RequestBody Expense updatedExpense,
+            @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) Long categoryId) {
         Optional<Expense> expenseOptional = expenseService.getExpenseById(id);
         if (expenseOptional.isEmpty()) {
             return ResponseEntity.notFound().build();
